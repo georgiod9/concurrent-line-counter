@@ -4,13 +4,25 @@ use std::sync::{Arc, Mutex};
 use std::thread;
 
 pub fn process_file(file_path: &str) -> io::Result<usize> {
-    let file = File::open(file_path)?;
+    let file = match File::open(file_path) {
+        Ok(file) => file,
+        Err(e) => {
+            return Err(io::Error::new(
+                io::ErrorKind::NotFound,
+                format!("Error opening file: {}", e),
+            ))
+        }
+    };
     let reader = BufReader::new(file);
-    let mut lines = Vec::new();
-
-    for line in reader.lines() {
-        lines.push(line?);
-    }
+    let lines: Vec<String> = match reader.lines().collect::<Result<_, _>>() {
+        Ok(lines) => lines,
+        Err(e) => {
+            return Err(io::Error::new(
+                io::ErrorKind::InvalidData,
+                format!("Error reading lines: {}", e),
+            ))
+        }
+    };
 
     let chunk_size = (lines.len() / 4).max(1);
     let line_count = Arc::new(Mutex::new(0));

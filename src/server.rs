@@ -10,7 +10,7 @@ fn handle_client(mut stream: TcpStream) {
             let file_path = String::from_utf8_lossy(&buffer[..size]).trim().to_string();
             println!("[server.rs]: File Path: {}", file_path);
 
-            match crate::file_processor::process_file(&file_path) {
+            match crate::file_processor::process_file_with_thread_pool(&file_path) {
                 Ok(line_count) => {
                     println!("[server.rs]: Line Count: {}", line_count);
 

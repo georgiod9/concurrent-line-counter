@@ -3,6 +3,7 @@ use std::net::{TcpListener, TcpStream};
 use std::thread;
 
 fn handle_client(mut stream: TcpStream) {
+    println!("New client connected!");
     let mut buffer = [0; 1024];
     match stream.read(&mut buffer) {
         Ok(size) => {
@@ -28,6 +29,7 @@ fn handle_client(mut stream: TcpStream) {
             eprintln!("Failed to read from stream: {}", e);
         }
     }
+    println!("Closing client connection.");
 }
 
 pub fn start_server(address: &str) {
